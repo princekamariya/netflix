@@ -6,12 +6,16 @@ import { checkValidData } from "../utils/validate";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    updateProfile,
 } from "firebase/auth";
 import { auth } from "../config/firebase";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
 
 function Login() {
     const [isSignInForm, setIsSignInForm] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
+    const dispatch = useDispatch();
 
     const email = useRef(null);
     const password = useRef(null);
@@ -33,9 +37,29 @@ function Login() {
                 email.current.value,
                 password.current.value
             )
-                .then((userCredential) => {
+                .then(async (userCredential) => {
                     const user = userCredential.user;
                     console.log(user);
+                    await updateProfile(user, {
+                        displayName: name.current.value,
+                        photoURL:
+                            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFZIOw_o4aMw44aSD0VjbWV8OvpiqPcsnLCg&s",
+                    });
+
+                    // ✅ Refresh auth.currentUser after profile update
+                    await auth.updateCurrentUser(user);
+
+                    const { uid, email, displayName, photoURL } =
+                        auth.currentUser;
+
+                    dispatch(
+                        addUser({
+                            uid: uid,
+                            email: email,
+                            displayName: displayName,
+                            photoURL: photoURL,
+                        })
+                    );
                 })
                 .catch((error) => {
                     const errorCode = error.code;
