@@ -10,9 +10,9 @@ function VideoBackground({ movieId }) {
     if (!trailerVideo) return null;
 
     return (
-        <div className="w-screen">
+        <div className="w-screen overflow-x-hidden">
             <iframe
-                className="w-screen aspect-video"
+                className="w-screen aspect-video block"
                 src={`https://www.youtube.com/embed/${trailerVideo.key}?autoplay=1&mute=1`}
                 title="YouTube video player"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
